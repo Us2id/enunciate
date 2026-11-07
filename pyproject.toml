@@ -1,0 +1,109 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "enunciate"
+version = "0.1.0"
+description = "Phoneme-level English pronunciation assessment with wav2vec2 and espeak-ng"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+authors = [{ name = "Mohammad Usaid" }]
+keywords = [
+  "pronunciation",
+  "speech",
+  "phonemes",
+  "wav2vec2",
+  "espeak",
+  "language-learning",
+  "mispronunciation-detection",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Education",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Multimedia :: Sound/Audio :: Speech",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+  "numpy>=1.26",
+  "torch>=2.2",
+  "transformers>=4.40",
+  "huggingface-hub>=0.23",
+  "soundfile>=0.12",
+  "soxr>=0.3",
+]
+
+[project.optional-dependencies]
+server = [
+  "fastapi>=0.110",
+  "uvicorn[standard]>=0.29",
+  "python-multipart>=0.0.9",
+]
+dev = [
+  "enunciate[server]",
+  "pytest>=8",
+  "pytest-cov>=5",
+  "httpx>=0.27",
+  "ruff>=0.6",
+  "mypy>=1.10",
+  "pre-commit>=3.7",
+]
+
+[project.scripts]
+enunciate = "enunciate.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/Us2id/enunciate"
+Repository = "https://github.com/Us2id/enunciate"
+Issues = "https://github.com/Us2id/enunciate/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/enunciate"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src", "tests", "README.md", "LICENSE", "pyproject.toml"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "N", "SIM", "C4", "RUF", "PTH", "RET", "ARG"]
+ignore = ["RUF001", "RUF002", "RUF003"]  # IPA symbols in docstrings and comments are intentional
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["ARG"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+files = ["src"]
+warn_unreachable = true
+
+[[tool.mypy.overrides]]
+module = ["soxr", "soundfile", "transformers.*", "huggingface_hub.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra -m 'not integration'"
+markers = [
+  "integration: needs espeak-ng and the real model; run with `pytest -m integration`",
+]
+
+[tool.coverage.run]
+source = ["enunciate"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
