@@ -1,5 +1,4 @@
 import pytest
-from tests.conftest import CannedRunner
 
 from enunciate.g2p import (
     EspeakNotFoundError,
@@ -9,6 +8,7 @@ from enunciate.g2p import (
     display_form,
     tokenize,
 )
+from tests.conftest import CannedRunner
 
 
 def test_tokenize_keeps_only_tokens_with_letters_or_digits():
